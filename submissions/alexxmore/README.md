@@ -1,15 +1,15 @@
-# Lesson 13 - Containers for AI
+# Lesson 13 - Контейнери для AI
 
-Submission: `alexxmore`
+Здача: `alexxmore`
 
-## What is included
+## Що додано
 
-- `Dockerfile.naive` - baseline image from `python:3.11` with `COPY . .` and `pip install`.
-- `Dockerfile` - multi-stage image from `python:3.11-slim`, non-root runtime user, and `/health` healthcheck.
-- `.dockerignore` - excludes local env, venv, caches, tests, and metadata from the build context.
-- `docker-compose.yml` - app + Langfuse + Qdrant + Redis + Postgres for Langfuse storage.
+- `Dockerfile.naive` - базовий образ на `python:3.11` з `COPY . .` та `pip install`.
+- `Dockerfile` - multi-stage образ на `python:3.11-slim`, non-root користувач у runtime та `HEALTHCHECK` для `/health`.
+- `.dockerignore` - прибирає з build context локальний `.env`, `.venv`, кеші, тести та службові файли.
+- `docker-compose.yml` - застосунок + Langfuse + Qdrant + Redis + Postgres для зберігання даних Langfuse.
 
-## Local setup
+## Локальний запуск
 
 ```powershell
 python -m venv .venv
@@ -17,17 +17,21 @@ python -m venv .venv
 Copy-Item .env.example .env
 ```
 
-Set `OPENAI_API_KEY` in `.env`.
+У файлі `.env` потрібно вказати `OPENAI_API_KEY`.
 
-In this Docker Desktop environment, OpenAI calls from Linux containers required:
+У моєму Docker Desktop середовищі запити до OpenAI з Linux-контейнерів потребували:
 
 ```env
 OPENAI_VERIFY_SSL=false
 ```
 
-The default in `.env.example` remains `OPENAI_VERIFY_SSL=true`.
+У `.env.example` значення за замовчуванням лишається безпечним:
 
-## Docker commands
+```env
+OPENAI_VERIFY_SSL=true
+```
+
+## Docker-команди
 
 ```powershell
 docker build -f Dockerfile.naive -t alexxmore-rag:naive .
@@ -35,7 +39,7 @@ docker build -f Dockerfile -t alexxmore-rag:multi-stage .
 docker compose up -d --build
 ```
 
-Ask endpoint:
+Запит до `/ask`:
 
 ```powershell
 Invoke-RestMethod -Method Post http://127.0.0.1:8000/ask `
@@ -43,18 +47,18 @@ Invoke-RestMethod -Method Post http://127.0.0.1:8000/ask `
   -Body '{"question":"What is a vector database?"}'
 ```
 
-## Metrics
+## Метрики
 
-Measured on Docker Desktop 29.4.3. Build time uses `docker build --no-cache` with base images already available locally.
+Виміряно на Docker Desktop 29.4.3. Час збірки вимірювався через `docker build --no-cache`, базові образи вже були доступні локально.
 
-| Metric | Naive | Multi-stage |
+| Метрика | Naive | Multi-stage |
 |---|---:|---:|
-| Image size | 1.76 GB | 367 MB |
-| Build time | 19.19s | 24.48s |
-| Rebuild after code change | 18.15s | 2.45s |
-| Cold start to `/health=ok` | 3.13s | 2.60s |
+| Розмір образу | 1.76 GB | 367 MB |
+| Час збірки | 19.19s | 24.48s |
+| Перезбірка після зміни коду | 18.15s | 2.45s |
+| Cold start до `/health=ok` | 3.13s | 2.60s |
 
-## Evidence
+## Докази
 
 `docker images`:
 
