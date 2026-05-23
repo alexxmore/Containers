@@ -42,9 +42,7 @@ docker compose up -d --build
 Запит до `/ask`:
 
 ```powershell
-Invoke-RestMethod -Method Post http://127.0.0.1:8000/ask `
-  -ContentType 'application/json' `
-  -Body '{"question":"What is a vector database?"}'
+'{"question":"What is a vector database?"}' | curl.exe -X POST http://localhost:8000/ask -H "Content-Type: application/json" -d '@-'
 ```
 
 ## Метрики
@@ -68,6 +66,8 @@ alexxmore-rag   multi-stage   367MB
 alexxmore-rag   naive         1.76GB
 ```
 
+![docker images](docker_images.PNG)
+
 `docker compose ps`:
 
 ```text
@@ -78,6 +78,8 @@ alexxmore-postgres-1   postgres:16-alpine          postgres   Up (healthy)
 alexxmore-qdrant-1     qdrant/qdrant:v1.12.6       qdrant     Up
 alexxmore-redis-1      redis:7-alpine              redis      Up
 ```
+
+![docker compose ps](docker_compose.PNG)
 
 `POST /ask`:
 
@@ -92,3 +94,5 @@ alexxmore-redis-1      redis:7-alpine              redis      Up
   ]
 }
 ```
+
+![curl ask](curl.PNG)
